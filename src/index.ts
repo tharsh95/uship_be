@@ -39,7 +39,8 @@ async function startServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => ({ req, prisma, user: (req as any).user })
+    context: ({ req }) => ({ req, prisma, user: (req as any).user }),
+    persistedQueries: false
   });
   await server.start();
   server.applyMiddleware({ app: app as any });
