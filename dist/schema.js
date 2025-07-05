@@ -9,7 +9,7 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
   }
 
   type Employee {
-    id: Int!
+    id: ID!
     name: String!
     email: String
     age: Int!
@@ -22,7 +22,7 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
     avatar: String
     phone: String
     address: String
-    startDate: String
+    startDate: Int
     status: String!
     role: Role!
   }
@@ -39,7 +39,7 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
 
   type Query {
     employees(page: Int, pageSize: Int, sortBy: String, sortOrder: String, filter: String): EmployeePage!
-    employee(id: Int!): Employee
+    employee(id: ID!): Employee
   }
 
   type Mutation {
@@ -56,7 +56,7 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
       avatar: String
       phone: String
       address: String
-      startDate: String
+      startDate: Int
       status: String
       password: String!
       role: Role
@@ -75,12 +75,12 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
       avatar: String
       phone: String
       address: String
-      startDate: String
+      startDate: Int
       status: String
       role: Role
     ): Employee!
     updateEmployee(
-      id: Int!
+      id: ID!
       name: String
       email: String
       age: Int
@@ -93,7 +93,7 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
       avatar: String
       phone: String
       address: String
-      startDate: String
+      startDate: Int
       status: String
       role: Role
     ): Employee!

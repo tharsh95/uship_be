@@ -25,6 +25,20 @@ exports.resolvers = {
         employees: async (_parent, args, context) => {
             if (!context.user)
                 throw new apollo_server_express_1.AuthenticationError('Not authenticated');
+            if (context.user.role === 'EMPLOYEE') {
+                // Only return the logged-in employee
+                const employee = await context.prisma.employee.findUnique({ where: { id: context.user.id } });
+                if (!employee)
+                    return { employees: [], totalCount: 0 };
+                return {
+                    employees: [{
+                            ...employee,
+                            subjects: parseSubjects(employee.subjects),
+                            startDate: employee.startDate ? Math.floor(employee.startDate.getTime() / 1000) : null
+                        }],
+                    totalCount: 1
+                };
+            }
             if (context.user.role !== 'ADMIN')
                 throw new apollo_server_express_1.ForbiddenError('Not authorized');
             const { page = 1, pageSize = 10, sortBy = 'id', sortOrder = 'asc', filter = '' } = args;
@@ -52,24 +66,28 @@ exports.resolvers = {
                 employees: employees.map((e) => ({
                     ...e,
                     subjects: parseSubjects(e.subjects),
-                    startDate: e.startDate ? e.startDate.toISOString().split('T')[0] : null
+                    startDate: e.startDate ? Math.floor(e.startDate.getTime() / 1000) : null
                 })),
                 totalCount,
             };
         },
         employee: async (_parent, { id }, context) => {
-            console.log(id);
             if (!context.user)
                 throw new apollo_server_express_1.AuthenticationError('Not authenticated');
-            if (context.user.role !== 'ADMIN' && context.user.id !== id)
+            if (context.user.role === 'EMPLOYEE') {
+                // Always return the logged-in employee's details
+                id = context.user.id;
+            }
+            else if (context.user.role !== 'ADMIN' && context.user.id !== id) {
                 throw new apollo_server_express_1.ForbiddenError('Not authorized');
-            const employee = await context.prisma.employee.findUnique({ where: { id } });
+            }
+            const employee = await context.prisma.employee.findUnique({ where: { id: +id } });
             if (!employee)
                 return null;
             return {
                 ...employee,
                 subjects: parseSubjects(employee.subjects),
-                startDate: employee.startDate ? employee.startDate.toISOString().split('T')[0] : null
+                startDate: employee.startDate ? Math.floor(employee.startDate.getTime() / 1000) : null
             };
         },
     },
@@ -80,6 +98,10 @@ exports.resolvers = {
             if (context.user.role !== 'ADMIN')
                 throw new apollo_server_express_1.ForbiddenError('Not authorized');
             const { name, age, class: className, subjects, attendance, role = client_1.Role.EMPLOYEE, email, department, position, salary, avatar, phone, address, startDate, status = 'active' } = args;
+            // Generate a random plain password
+            const plainPassword = Math.random().toString(36).slice(-8);
+            const hashedPassword = await bcryptjs_1.default.hash(plainPassword, 10);
+            console.log(`Generated password for ${email || name}:`, plainPassword);
             const employee = await context.prisma.employee.create({
                 data: {
                     name,
@@ -94,15 +116,16 @@ exports.resolvers = {
                     avatar,
                     phone,
                     address,
-                    startDate: startDate ? new Date(startDate) : null,
+                    startDate: startDate ? new Date(startDate * 1000) : null,
                     status,
                     role,
+                    password: hashedPassword,
                 },
             });
             return {
                 ...employee,
                 subjects,
-                startDate: employee.startDate ? employee.startDate.toISOString().split('T')[0] : null
+                startDate: employee.startDate ? Math.floor(employee.startDate.getTime() / 1000) : null
             };
         },
         updateEmployee: async (_parent, args, context) => {
@@ -115,15 +138,15 @@ exports.resolvers = {
             if (subjects)
                 data.subjects = stringifySubjects(subjects);
             if (startDate)
-                data.startDate = new Date(startDate);
+                data.startDate = new Date(startDate * 1000);
             const employee = await context.prisma.employee.update({
-                where: { id },
+                where: { id: Number(id) },
                 data,
             });
             return {
                 ...employee,
                 subjects: subjects || parseSubjects(employee.subjects),
-                startDate: employee.startDate ? employee.startDate.toISOString().split('T')[0] : null
+                startDate: employee.startDate ? Math.floor(employee.startDate.getTime() / 1000) : null
             };
         },
         deleteEmployee: async (_parent, { id }, context) => {
@@ -147,7 +170,7 @@ exports.resolvers = {
                 employee: {
                     ...employee,
                     subjects: parseSubjects(employee.subjects),
-                    startDate: employee.startDate ? employee.startDate.toISOString().split('T')[0] : null
+                    startDate: employee.startDate ? Math.floor(employee.startDate.getTime() / 1000) : null
                 }
             };
         },
@@ -168,7 +191,7 @@ exports.resolvers = {
                     avatar,
                     phone,
                     address,
-                    startDate: startDate ? new Date(startDate) : null,
+                    startDate: startDate ? new Date(startDate * 1000) : null,
                     status,
                     role,
                     password: hashedPassword,
@@ -177,7 +200,7 @@ exports.resolvers = {
             return {
                 ...employee,
                 subjects,
-                startDate: employee.startDate ? employee.startDate.toISOString().split('T')[0] : null
+                startDate: employee.startDate ? Math.floor(employee.startDate.getTime() / 1000) : null
             };
         },
     },

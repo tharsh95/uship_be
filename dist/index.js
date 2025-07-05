@@ -9,6 +9,7 @@ const schema_1 = require("./schema");
 const resolvers_1 = require("./resolvers");
 const client_1 = require("@prisma/client");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const cors_1 = __importDefault(require("cors"));
 const prisma = new client_1.PrismaClient();
 const app = (0, express_1.default)();
 // JWT middleware
@@ -26,6 +27,10 @@ app.use((req, res, next) => {
     }
     next();
 });
+app.use((0, cors_1.default)({
+    origin: ["http://localhost:5173"],
+    credentials: true
+}));
 async function startServer() {
     const server = new apollo_server_express_1.ApolloServer({
         typeDefs: schema_1.typeDefs,
