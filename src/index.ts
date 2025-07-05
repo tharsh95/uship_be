@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(cors({
-  origin: ["http://localhost:5173"],
+  origin: ["*"],
   credentials: true
 }));
 async function startServer() {
