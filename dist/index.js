@@ -12,6 +12,16 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cors_1 = __importDefault(require("cors"));
 const prisma = new client_1.PrismaClient();
 const app = (0, express_1.default)();
+// CORS middleware
+app.use((0, cors_1.default)({
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'http://localhost:4173',
+        'https://your-frontend-domain.com' // Add your production frontend URL
+    ],
+    credentials: true
+}));
 // JWT middleware
 app.use((req, res, next) => {
     const auth = req.headers['authorization'];
@@ -27,10 +37,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-app.use((0, cors_1.default)({
-    origin: ["*"],
-    credentials: true
-}));
 async function startServer() {
     const server = new apollo_server_express_1.ApolloServer({
         typeDefs: schema_1.typeDefs,

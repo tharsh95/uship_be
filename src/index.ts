@@ -4,9 +4,21 @@ import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import cors from "cors"
+import cors from 'cors';
+
 const prisma = new PrismaClient();
 const app = express();
+
+// CORS middleware
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:4173',
+    'https://your-frontend-domain.com' // Add your production frontend URL
+  ],
+  credentials: true
+}));
 
 // JWT middleware
 app.use((req, res, next) => {
@@ -22,10 +34,7 @@ app.use((req, res, next) => {
   }
   next();
 });
-app.use(cors({
-  origin: ["*"],
-  credentials: true
-}));
+
 async function startServer() {
   const server = new ApolloServer({
     typeDefs,
