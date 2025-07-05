@@ -4,7 +4,7 @@ import { typeDefs } from './schema';
 import { resolvers } from './resolvers';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-
+import cors from "cors"
 const prisma = new PrismaClient();
 const app = express();
 
@@ -22,7 +22,10 @@ app.use((req, res, next) => {
   }
   next();
 });
-
+app.use(cors({
+  origin: ['*'],
+  credentials: true
+}));
 async function startServer() {
   const server = new ApolloServer({
     typeDefs,
