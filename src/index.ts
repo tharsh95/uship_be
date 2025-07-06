@@ -11,14 +11,10 @@ const app = express();
 
 // CORS middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://localhost:4173',
-    'https://your-frontend-domain.com', // Add your production frontend URL
-    '*' // Allow all origins for now - you can restrict this later
-  ],
-  credentials: true
+  origin: true, // Allow all origins
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // JWT middleware
