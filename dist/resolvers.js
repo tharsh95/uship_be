@@ -9,7 +9,6 @@ const apollo_server_express_1 = require("apollo-server-express");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const emailService_1 = require("./emailService");
-const prisma = new client_1.PrismaClient();
 function parseSubjects(subjects) {
     try {
         return JSON.parse(subjects);
@@ -124,6 +123,7 @@ exports.resolvers = {
                 },
             });
             // Send email with credentials if email is provided
+            console.log(email);
             if (email) {
                 try {
                     const emailSent = await emailService_1.emailService.sendPasswordEmail(name, email, plainPassword);

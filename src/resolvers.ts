@@ -4,8 +4,19 @@ import { AuthenticationError, ForbiddenError } from 'apollo-server-express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { emailService } from './emailService';
-
-const prisma = new PrismaClient();
+import { 
+  OptimizedQueryBuilder, 
+  QueryPerformanceMonitor,
+  DatabaseHealthCheck
+} from './performance/databaseOptimizer';
+import { 
+  EmployeeDataLoader,
+  QueryComplexityAnalyzer,
+  ResponseOptimizer,
+  GraphQLCache,
+  GraphQLPerformanceMonitor
+} from './performance/graphqlOptimizer';
+import { prisma } from './performance/databaseOptimizer';
 
 function parseSubjects(subjects: string): string[] {
   try {

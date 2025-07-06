@@ -128,7 +128,7 @@ class EmailService {
           
           <p>You can now log in to your account using your email address and the password above.</p>
           
-          <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/login" class="button">
+          <a href="${process.env.FRONTEND_URL || 'http://localhost:5731'}/login" class="button">
             Login to Your Account
           </a>
           
