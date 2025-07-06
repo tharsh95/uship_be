@@ -15,7 +15,8 @@ app.use(cors({
     'http://localhost:5173',
     'http://localhost:3000',
     'http://localhost:4173',
-    'https://your-frontend-domain.com' // Add your production frontend URL
+    'https://your-frontend-domain.com', // Add your production frontend URL
+    '*' // Allow all origins for now - you can restrict this later
   ],
   credentials: true
 }));
