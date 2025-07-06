@@ -8,6 +8,7 @@ const client_1 = require("@prisma/client");
 const apollo_server_express_1 = require("apollo-server-express");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const emailService_1 = require("./emailService");
 const prisma = new client_1.PrismaClient();
 function parseSubjects(subjects) {
     try {
@@ -122,6 +123,25 @@ exports.resolvers = {
                     password: hashedPassword,
                 },
             });
+            // Send email with credentials if email is provided
+            if (email) {
+                try {
+                    const emailSent = await emailService_1.emailService.sendPasswordEmail(name, email, plainPassword);
+                    if (emailSent) {
+                        console.log(`Password email sent successfully to ${email}`);
+                    }
+                    else {
+                        console.error(`Failed to send password email to ${email}`);
+                    }
+                }
+                catch (error) {
+                    console.error('Error sending password email:', error);
+                    // Don't throw error to avoid breaking the employee creation
+                }
+            }
+            else {
+                console.log(`No email provided for ${name}, skipping email notification`);
+            }
             return {
                 ...employee,
                 subjects,
@@ -202,6 +222,45 @@ exports.resolvers = {
                 subjects,
                 startDate: employee.startDate ? Math.floor(employee.startDate.getTime() / 1000) : null
             };
+        },
+        resendPasswordEmail: async (_parent, { employeeId }, context) => {
+            if (!context.user)
+                throw new apollo_server_express_1.AuthenticationError('Not authenticated');
+            if (context.user.role !== 'ADMIN')
+                throw new apollo_server_express_1.ForbiddenError('Not authorized');
+            const employee = await context.prisma.employee.findUnique({
+                where: { id: parseInt(employeeId) }
+            });
+            if (!employee) {
+                throw new Error('Employee not found');
+            }
+            if (!employee.email) {
+                throw new Error('Employee does not have an email address');
+            }
+            // Generate a new temporary password
+            const newPlainPassword = Math.random().toString(36).slice(-8);
+            const newHashedPassword = await bcryptjs_1.default.hash(newPlainPassword, 10);
+            // Update the employee's password
+            await context.prisma.employee.update({
+                where: { id: parseInt(employeeId) },
+                data: { password: newHashedPassword },
+            });
+            // Send the new password via email
+            try {
+                const emailSent = await emailService_1.emailService.sendPasswordEmail(employee.name, employee.email, newPlainPassword);
+                if (emailSent) {
+                    console.log(`Password reset email sent successfully to ${employee.email}`);
+                    return true;
+                }
+                else {
+                    console.error(`Failed to send password reset email to ${employee.email}`);
+                    return false;
+                }
+            }
+            catch (error) {
+                console.error('Error sending password reset email:', error);
+                return false;
+            }
         },
     },
 };

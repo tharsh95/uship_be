@@ -96,5 +96,6 @@ export const typeDefs = gql`
       role: Role
     ): Employee!
     deleteEmployee(id: Int!): Boolean!
+    resendPasswordEmail(employeeId: ID!): Boolean!
   }
 `; 
