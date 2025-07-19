@@ -99,6 +99,12 @@ export const resolvers = {
     addEmployee: async (_parent: any, args: any, context: any) => {
       if (!context.user) throw new AuthenticationError('Not authenticated');
       if (context.user.role !== 'ADMIN') throw new ForbiddenError('Not authorized');
+      if (!args.name || args.name.trim() === "") {
+        throw new Error("Name cannot be empty");
+      }
+      if (!args.email || args.email.trim() === "") {
+        throw new Error("Email cannot be empty");
+      }
       const { 
         name, age, class: className, subjects, attendance, role = Role.EMPLOYEE,
         email, department, position, salary, avatar, phone, address, startDate, status = 'active'

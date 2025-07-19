@@ -12,7 +12,7 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
     id: ID!
     name: String!
     email: String
-    age: Int!
+    age: Int
     department: String
     position: String
     salary: Float
@@ -46,7 +46,7 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
     register(
       name: String!
       email: String
-      age: Int!
+      age: Int
       department: String
       position: String
       salary: Float
@@ -65,7 +65,7 @@ exports.typeDefs = (0, apollo_server_express_1.gql) `
     addEmployee(
       name: String!
       email: String
-      age: Int!
+      age: Int
       department: String
       position: String
       salary: Float

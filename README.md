@@ -192,6 +192,3 @@ mutation {
 - `npx prisma studio` – Visual DB browser
 
 ---
-
-## 📬 Contact
-For questions or improvements, open an issue or contact the maintainer. 

@@ -10,7 +10,7 @@ export const typeDefs = gql`
     id: ID!
     name: String!
     email: String
-    age: Int!
+    age: Int
     department: String
     position: String
     salary: Float
@@ -44,7 +44,7 @@ export const typeDefs = gql`
     register(
       name: String!
       email: String
-      age: Int!
+      age: Int
       department: String
       position: String
       salary: Float
@@ -63,7 +63,7 @@ export const typeDefs = gql`
     addEmployee(
       name: String!
       email: String
-      age: Int!
+      age: Int
       department: String
       position: String
       salary: Float
